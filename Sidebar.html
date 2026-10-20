@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #3b82f6;
+      --primary-hover: #2563eb;
+      --success-color: #10b981;
+      --success-hover: #059669;
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 16px;
+      font-size: 14px;
+    }
+
+    .section {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-bottom: 4px;
+    }
+
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-main);
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .radio-label:hover {
+      border-color: var(--primary-color);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary-color);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 11px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-success {
+      background-color: var(--success-color);
+      color: #ffffff;
+    }
+
+    .btn-success:hover {
+      background-color: var(--success-hover);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status-card {
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      line-height: 1.5;
+      display: none;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+
+    .status-success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10b981;
+      color: #34d399;
+    }
+
+    .status-error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #ef4444;
+      color: #f87171;
+    }
+
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border-left-color: #ffffff;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-overlay {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--text-sub);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .status-checkboxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .status-checkboxes .radio-label {
+      flex: 1 1 calc(50% - 6px);
+      font-size: 12px;
+      padding: 5px 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ステップ1：データ抽出 -->
+  <div class="section">
+    <div class="section-title">1. データ抽出 (フェッチ)</div>
+    
+    <div class="form-group">
+      <label>抽出モード選択</label>
+      <div class="radio-group">
+        <label class="radio-label">
+          <input type="radio" name="mode" value="keyword" checked onchange="toggleMode()">
+          キーワード検索 (著者/シリーズ/書名)
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="mode" value="barcode" onchange="toggleMode()">
+          BarcodeScan 連携 (A列リスト照合)
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>書き込みモード</label>
+      <div class="radio-group" style="flex-direction: row; gap: 8px; margin-bottom: 0;">
+        <label class="radio-label" style="flex: 1; justify-content: center;">
+          <input type="radio" name="writeMode" value="overwrite" checked> 上書き
+        </label>
+        <label class="radio-label" style="flex: 1; justify-content: center;">
+          <input type="radio" name="writeMode" value="append"> 追記
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group" id="keywordGroup">
+      <label for="keywordInput">検索キーワード</label>
+      <input type="text" id="keywordInput" placeholder="例: 夏目漱石 集英社文庫 (※ | でOR指定可)">
+      
+      <div style="margin-top: 8px;">
+        <label>検索一致条件 (スペース区切り時)</label>
+        <div class="radio-group" style="flex-direction: row; gap: 8px; margin-bottom: 0;">
+          <label class="radio-label" style="flex: 1; justify-content: center;">
+            <input type="radio" name="searchMode" value="AND" checked> AND (すべて)
+          </label>
+          <label class="radio-label" style="flex: 1; justify-content: center;">
+            <input type="radio" name="searchMode" value="OR"> OR (いずれか)
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>対象ステータス</label>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label class="radio-label">
+          <input type="checkbox" id="chkNormalStatus" checked> 通常 (Sold除外)
+        </label>
+        <div class="status-checkboxes">
+          <label class="radio-label">
+            <input type="checkbox" class="chk-status" value="In stock"> In stock
+          </label>
+          <label class="radio-label">
+            <input type="checkbox" class="chk-status" value="Ready"> Ready
+          </label>
+          <label class="radio-label">
+            <input type="checkbox" class="chk-status" value="List on"> List on
+          </label>
+          <label class="radio-label">
+            <input type="checkbox" class="chk-status" value="Sold"> Sold
+          </label>
+          <label class="radio-label">
+            <input type="checkbox" class="chk-status" value="NotSale"> NotSale
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <button id="btnFetch" class="btn btn-primary" onclick="handleFetch()">
+      🔍 データをConsoleへ抽出
+    </button>
+  </div>
+
+  <!-- ステップ2：ライトバック -->
+  <div class="section">
+    <div class="section-title">2. Ledger へ一括反映 (ライトバック)</div>
+    <p style="font-size: 11px; color: var(--text-sub); margin-bottom: 10px;">
+      Consoleシートの入力内容を Ledger シートへ一括で反映します。
+    </p>
+    <button id="btnWriteBack" class="btn btn-success" onclick="handleWriteBack()">
+      💾 Ledger シートへ更新反映
+    </button>
+  </div>
+
+  <!-- ステータス・メッセージ領域 -->
+  <div id="loading" class="loading-overlay">
+    <div class="spinner"></div>
+    <span id="loadingText">処理を実行中...</span>
+  </div>
+
+  <div id="statusBox" class="status-card"></div>
+
+  <script>
+    function toggleMode() {
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      const keywordGroup = document.getElementById('keywordGroup');
+      if (mode === 'keyword') {
+        keywordGroup.style.display = 'block';
+      } else {
+        keywordGroup.style.display = 'none';
+      }
+    }
+
+    function showLoading(msg) {
+      document.getElementById('loadingText').innerText = msg || '処理を実行中...';
+      document.getElementById('loading').style.display = 'flex';
+      document.getElementById('statusBox').style.display = 'none';
+      document.getElementById('btnFetch').disabled = true;
+      document.getElementById('btnWriteBack').disabled = true;
+    }
+
+    function hideLoading() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('btnFetch').disabled = false;
+      document.getElementById('btnWriteBack').disabled = false;
+    }
+
+    function showStatus(message, isSuccess) {
+      hideLoading();
+      const statusBox = document.getElementById('statusBox');
+      statusBox.innerText = message;
+      statusBox.className = 'status-card ' + (isSuccess ? 'status-success' : 'status-error');
+      statusBox.style.display = 'block';
+    }
+
+    function handleFetch() {
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      const keyword = document.getElementById('keywordInput').value.trim();
+      const searchModeEl = document.querySelector('input[name="searchMode"]:checked');
+      const searchMode = searchModeEl ? searchModeEl.value : 'AND';
+
+      const writeModeEl = document.querySelector('input[name="writeMode"]:checked');
+      const writeMode = writeModeEl ? writeModeEl.value : 'overwrite';
+
+      const isNormalStatus = document.getElementById('chkNormalStatus').checked;
+
+      const statusCheckboxes = document.querySelectorAll('.chk-status:checked');
+      const statuses = Array.from(statusCheckboxes).map(cb => cb.value);
+
+      if (mode === 'keyword' && !keyword) {
+        showStatus('検索キーワードを入力してください。', false);
+        return;
+      }
+
+      showLoading('Ledgerデータから抽出中...');
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (res.success) {
+            showStatus(res.message, true);
+          } else {
+            showStatus(res.message, false);
+          }
+        })
+        .withFailureHandler(function(err) {
+          showStatus('通信エラーが発生しました: ' + err.message, false);
+        })
+        .fetchToConsole({
+          mode: mode,
+          keyword: keyword,
+          searchMode: searchMode,
+          writeMode: writeMode,
+          isNormalStatus: isNormalStatus,
+          statuses: statuses
+        });
+    }
+
+    function handleWriteBack() {
+      if (!confirm('Console シートの変更内容を Ledger シートに反映してもよろしいですか？')) {
+        return;
+      }
+
+      showLoading('Ledger シートへ書き戻し中...');
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (res.success) {
+            showStatus(res.message, true);
+          } else {
+            showStatus(res.message, false);
+          }
+        })
+        .withFailureHandler(function(err) {
+          showStatus('通信エラーが発生しました: ' + err.message, false);
+        })
+        .writeBackToLedger();
+    }
+  </script>
+</body>
+</html>

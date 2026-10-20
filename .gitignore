@@ -1,0 +1,26 @@
+# Node.js依存パッケージ
+node_modules/
+
+# 環境変数・秘密情報
+.env
+.env.local
+.env.*.local
+
+# ビルド成果物
+dist/
+build/
+.cache/
+
+# エディタ設定
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+
+# ログファイル
+*.log
+npm-debug.log*
